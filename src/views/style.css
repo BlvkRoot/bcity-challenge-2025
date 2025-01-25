@@ -1,0 +1,22 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+
+    h2 {
+      margin-top: 1rem;
+    }
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+
+  .tabs .tab a {
+    background-color: transparent;
+    color: orange !important;
+  }
+
+  .tabs .indicator {
+    background-color: black !important;
+  }
