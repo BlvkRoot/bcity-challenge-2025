@@ -1,16 +1,27 @@
 <?php
 
-declare (strict_types = 1);
+use App\App;
+use App\Config;
+use App\Container;
+use App\Modules\Controllers\HomeController;
+use App\Routes\Router;
 
-spl_autoload_register(
-    function ($class) {
-        $path = __DIR__ . './src/' . lcfirst(str_replace('\\', '/', $class)) . '.php';
+require __DIR__ . '/src/vendor/autoload.php';
 
-        if (file_exists($path)) {
-            require $path;
-        }
-    });
+define('VIEW_PATH', __DIR__ . '/src/views');
 
-use App\Modules\Entities\Client;
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
-var_dump(new Client("Angelo", "ANG001"));
+$container = new Container();
+$router    = new Router($container);
+
+$router
+    ->get('/', [HomeController::class, 'index']);
+
+(new App(
+    $container,
+    $router,
+    ['uri' => $_SERVER['REQUEST_URI'], 'method' => $_SERVER['REQUEST_METHOD']],
+    new Config($_ENV)
+))->run();
