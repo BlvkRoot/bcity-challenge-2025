@@ -3,6 +3,7 @@
 use App\App;
 use App\Config;
 use App\Container;
+use App\Modules\Controllers\ClientController;
 use App\Modules\Controllers\HomeController;
 use App\Routes\Router;
 
@@ -17,7 +18,8 @@ $container = new Container();
 $router    = new Router($container);
 
 $router
-    ->get('/', [HomeController::class, 'index']);
+    ->get('/', [HomeController::class, 'index'])
+    ->get('/clients', [ClientController::class, 'index']);
 
 (new App(
     $container,

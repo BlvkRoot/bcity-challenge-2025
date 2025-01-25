@@ -1,4 +1,6 @@
 
 <section>
-    <h1>Home Page</h1>
+    <div class="center">
+        <h2>Capture client's data</h2>
+    </div>
 </section>

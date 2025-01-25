@@ -5,21 +5,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>enatIs</title>
+    <title>Bcity Challenge</title>
     <!-- Compiled and minified CSS-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./src/views/style.css">
 </head>
 
 <body>
     <header>
         <nav>
             <div class="nav-wrapper container">
-                
-                <img src="/../Assets/img/logo.png" height="100px" width="80px" alt="logo" class="circle responsive-img">
                 <a href="/" class="brand-logo">
-                    eNatis
+                    BCity Challenge
                 </a>
                 <a href="#" data-target="mobilenav" class="sidenav-trigger right"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
@@ -35,14 +33,15 @@
             <li><a href="/contact">Contacts</a></li>
         </ul>
     </header>
-
-    {{content}}
+    <main>
+        {{content}}
+    </main>
 
     <!--footer-->
     <footer class="page-footer black">
         <div class="footer-copyright">
             <div class="container">
-                Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+                Developed by <a class="orange-text text-lighten-3" href="https://github.com/BlvkRoot">Henriques Salucamba</a>
             </div>
         </div>
     </footer>
@@ -57,24 +56,17 @@
     <!-- Materialize JS Initialization here -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            var sidenav = document.querySelectorAll('.sidenav');
+            var slider = document.querySelectorAll('.slider');
+            var tab = document.querySelectorAll('.tabs');
 
-            var elems = document.querySelectorAll('.slider');
-            let options = {
+            M.Slider.init(slider, {
                 duration: 600,
                 interval: 6000,
-            };
-            var instances = M.Slider.init(elems, options);
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            var elems = document.querySelectorAll('select');
-            var instances = M.FormSelect.init(elems, {});
-
-
+            });
+            M.Sidenav.init(sidenav, {});
+            M.Tabs.init(tab, {});
         });
     </script>
-
-
-
 </body>
-
 </html>
