@@ -154,7 +154,14 @@ class ContactAPI {
                                     <tr>
                                         <td><p class="text-left">${client.name}</p></td>
                                         <td><p class="text-left">${client.client_code}</p></td>
-                                        <td><a class="text-center">${client.client_code}</a></td>
+                                        <td>
+                                            <a 
+                                                href="#" 
+                                                id="unlink_client" 
+                                                data-contact-id="${$contactId}" 
+                                                data-client-code="${client.client_code}"
+                                                class="text-center">Unlink client</a>
+                                        </td>
                                     </tr>`)}
 
                     </tbody>

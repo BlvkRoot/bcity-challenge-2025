@@ -14,6 +14,8 @@
     <script src="./src/views/js/client-operations.js"></script>
     <script src="./src/views/js/contact-operations.js"></script>
     <script src="./src/views/js/globals.js"></script>
+    <script src="./src/views/js/unlink-client.js"></script>
+    <script src="./src/views/js/unlink-contact.js"></script>
 </head>
 
 <body>

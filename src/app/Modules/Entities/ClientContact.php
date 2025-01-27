@@ -11,6 +11,8 @@ class ClientContact
 {
     private DB $conn;
 
+    private $table = 'client_contact';
+
     public function __construct()
     {
         $this->conn = App::db();
@@ -18,12 +20,7 @@ class ClientContact
 
     public function link(string $clientCode, int $contactId)
     {
-        // Check if contact is already linked before inserting
-        $contactsLinked = $this->getClientsByContact($contactId);
-        if (count($contactsLinked) > 0) {
-            return;
-        }
-        $sql  = "INSERT INTO client_contact (client_code, contact_id) VALUES (:client_code, :contact_id)";
+        $sql  = "INSERT INTO {$this->table} (client_code, contact_id) VALUES (:client_code, :contact_id)";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':client_code' => $clientCode, ':contact_id' => $contactId]);
     }
@@ -52,5 +49,18 @@ class ClientContact
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':contact_id' => $contactId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function unlink(string $clientCode, int $contactId)
+    {
+        
+        $sql  = `DELETE FROM {$this->table} 
+                    WHERE {$this->table}.client_code = :contact_id
+                    AND {$this->table}.contact_id = :contact_id`;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':contact_id', $contactId, PDO::PARAM_INT);
+        $stmt->bindParam(':client_code', $clientCode, PDO::PARAM_STR);
+
+        return $stmt->execute();
     }
 }

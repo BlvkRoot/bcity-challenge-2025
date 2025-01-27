@@ -102,7 +102,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        await loadContacts();  
+        await loadContacts();
     });
 
     // Load and display contacts
@@ -187,3 +187,41 @@
     });
 </script>
 
+<script>
+    document.getElementById('unlink_client').addEventListener('click', async function (event) {
+    event.preventDefault(); // Prevent the default link behavior
+
+    // Get the IDs from the link's data attributes
+    const contactId = event.target.getAttribute('data-contact-id');
+    const clientCode = event.target.getAttribute('data-client-code');
+
+    if (!contactId || !clientId) {
+        alert('Contact ID and Client Code are required.');
+        return;
+    }
+
+    try {
+        // Send the POST request
+        const response = await fetch('/clients/unlink', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contact_id: contactId,
+                client_code: clientCode,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            globals.showNotification(result.message, 'success'); // Success message
+        } else {
+            globals.showNotification(`Error: ${result.error}`, 'error'); // Error message
+        }
+    } catch (error) {
+        console.log(`An error occurred: ${error.message}`);
+    }
+});
+</script>

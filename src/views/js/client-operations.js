@@ -153,7 +153,14 @@ class ClientAPI {
                                     <tr>
                                         <td><p class="text-left">${contact.surname} ${contact.name}</p></td>
                                         <td><p class="text-left">${contact.email}</p></td>
-                                        <td><a href="" class="text-center">link to unlink here</a></td>
+                                        <td>
+                                            <a 
+                                                href="#" 
+                                                id="unlink_contact" 
+                                                data-contact-id="${contact.id}" 
+                                                data-client-code="${$clientCode}"
+                                                class="text-center">Unlink contact</a>
+                                        </td>
                                     </tr>`)}
 
                     </tbody>
@@ -167,5 +174,4 @@ class ClientAPI {
             `;
         }
     }
-    
 }

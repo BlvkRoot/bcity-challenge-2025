@@ -186,4 +186,45 @@ class ClientController extends Controller
             ], 500);
         }
     }
+
+    public function unlink(): bool | string
+    {
+        header("Content-Type: application/json;");
+        // Get client request data
+        // Get POST data
+        $request = json_decode(file_get_contents('php://input'), true);
+
+        try {
+
+            // Validate input
+            if (! isset($request['client_code']) || ! isset($request['contact_id'])) {
+                return $this->jsonResponse([
+                    'status'  => 'error',
+                    'message' => 'Invalid inputs',
+                ], 400);
+            }
+
+            $clientCode = (string)$request['client_code'];
+            $contactId = (int)$request['contact_id']; // Ensure ID is an integer
+
+            // Unlink client from contact
+            $result = $this->contact->unlink($clientCode, $contactId);
+
+            if ($result) {
+                return $this->jsonResponse([
+                    'status'  => 'success',
+                    'message' => 'Contact unlinked successfully.',
+                ], 201);
+            }
+
+            throw new Exception("Failed to unlink contact");
+
+        } catch (Exception $e) {
+            return $this->jsonResponse([
+                'status'  => 'error',
+                'message' => 'Failed to unlink contact',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

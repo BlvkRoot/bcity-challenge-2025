@@ -74,6 +74,7 @@
 
 <script src="./src/views/js/link-contacts.js"></script>
 
+
 <script>
     // Create client form submission
     document.getElementById('create_client_form').addEventListener('submit', async (e) => {
@@ -101,4 +102,47 @@
             spinner.classList.add('hidden');
         }
     });
+</script>
+
+<script>
+    if(document.getElementById('unlink_contact')) {
+        document.getElementById('unlink_contact').addEventListener('click', async function (event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            alert('Clicked');
+            // Get the IDs from the link's data attributes
+            const contactId = event.target.getAttribute('data-contact-id');
+            const clientCode = event.target.getAttribute('data-client-code');
+
+            if (!contactId || !clientId) {
+                alert('Contact ID and Client Code are required.');
+                return;
+            }
+
+            try {
+                // Send the POST request
+                const response = await fetch('/contacts/unlink', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contact_id: contactId,
+                        client_code: clientCode,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert(result.message); // Success message
+                } else {
+                    alert(`Error: ${result.error}`); // Error message
+                }
+            } catch (error) {
+                alert(`An error occurred: ${error.message}`);
+            }
+        });
+
+    }
 </script>

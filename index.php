@@ -33,11 +33,13 @@ $router
     ->get('/client-contacts', [ClientController::class, 'contacts'])
     ->post('/clients', [ClientController::class, 'store'])
     ->post('/clients/link', [ClientController::class, 'link'])
+    ->post('/clients/unlink', [ClientController::class, 'unlink'])
     ->get('/contacts', [ContactController::class, 'index'])
     ->get('/contacts/list', [ContactController::class, 'list'])
     ->get('/contact-clients', [ContactController::class, 'clients'])
     ->post('/contacts', [ContactController::class, 'store'])
-    ->post('/contacts/link', [ContactController::class, 'link']);
+    ->post('/contacts/link', [ContactController::class, 'link'])
+    ->post('/contacts/unlink', [ContactController::class, 'unlink']);
 
 (new App(
     $container,

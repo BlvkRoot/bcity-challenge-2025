@@ -7,6 +7,8 @@ document.getElementById('link_contact').addEventListener('click', async () => {
 
     try {
 
+        console.log(selectedContacts);
+
         // Send the AJAX request
         const response = await fetch('http://localhost:3000/clients/link', {
             method: 'POST',
