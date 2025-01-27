@@ -4,39 +4,39 @@ declare (strict_types = 1);
 
 namespace App\Modules\Controllers;
 
-use App\Modules\Entities\Client;
 use App\Modules\Entities\ClientContact;
-use App\Validators\ClientValidator;
+use App\Modules\Entities\Contact;
+use App\Validators\ContactValidator;
 use App\View;
 use Exception;
 
-class ClientController extends Controller
+class ContactController extends Controller
 {
-    private Client $client;
+    private Contact $contact;
 
-    private ClientContact $contact;
+    private ClientContact $client;
 
     public function __construct()
     {
-        $this->client  = new Client();
-        $this->contact = new ClientContact();
+        $this->contact = new Contact();
+        $this->client = new ClientContact();
     }
 
     public function index(): View
     {
-        return View::make('clients/index');
+        return View::make('contacts/index');
     }
 
     public function store(): bool | string
     {
         header("Content-Type: application/json;");
-        // Get client request data
+        // Get contact request data
         // Get POST data
         $request = json_decode(file_get_contents('php://input'), true);
 
         try {
             // Validate request
-            $validator = new ClientValidator($request, $this->client);
+            $validator = new ContactValidator($request, $this->contact);
 
             if (! $validator->validate()) {
                 return $this->jsonResponse([
@@ -46,26 +46,29 @@ class ClientController extends Controller
                 ], 422);
             }
 
-            // Create client
-            $clientCode = $this->client->save($request['name']);
+            // Create contact
+            $result = $this->contact->save(
+                $request['name'],
+                $request['surname'],
+                $request['email'],
+            );
 
-            if ($clientCode) {
+            if ($result) {
                 return $this->jsonResponse([
                     'status'  => 'success',
-                    'message' => 'Client created successfully',
+                    'message' => 'Contact created successfully',
                     'data'    => [
-                        'clientCode' => $clientCode,
-                        'name'       => $request['name'],
+                        'id' => $result
                     ],
                 ], 201);
             }
 
-            throw new Exception("Failed to create client");
+            throw new Exception("Failed to create contact");
 
         } catch (Exception $e) {
             return $this->jsonResponse([
                 'status'  => 'error',
-                'message' => 'Failed to create client',
+                'message' => 'Failed to create contact',
                 'error'   => $e->getMessage(),
             ], 500);
         }
@@ -74,50 +77,8 @@ class ClientController extends Controller
     public function list(): string | bool
     {
         try {
-            // Get clients
-            $clients = $this->client->list();
-
-            if ($clients) {
-                return $this->jsonResponse([
-                    'status' => 'success',
-                    'data'   => $clients,
-                ], 200);
-            }
-
-            if (! $clients) {
-                return $this->jsonResponse([
-                    'status' => 'success',
-                    'data'   => [],
-                ], 200);
-            }
-
-        } catch (Exception $e) {
-            return $this->jsonResponse([
-                'status'  => 'error',
-                'message' => 'Failed to fetch clients',
-                'error'   => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    // Retrieve list of contacts linked to a given client
-    public function contacts(): string | bool
-    {
-        header('Content-Type: application/json');
-
-        try {
-            // Validate and retrieve client ID
-            if (! isset($_GET['client_code'])) {
-                return $this->jsonResponse([
-                    'status'  => 'fail',
-                    'message' => 'Invalid client code',
-                ], 400);
-            }
-
-            $clientCode = $_GET['client_code'];
-
-            // Get client contacts
-            $contacts = $this->client->getClientContacts($clientCode);
+            // Get contacts
+            $contacts = $this->contact->list();
 
             if ($contacts) {
                 return $this->jsonResponse([
@@ -126,19 +87,62 @@ class ClientController extends Controller
                 ], 200);
             }
 
-            if (! $contacts) {
+            if (!$contacts) {
                 return $this->jsonResponse([
                     'status' => 'success',
                     'data'   => [],
                 ], 200);
             }
 
-            throw new Exception('Failed to fetch contacts');
-
         } catch (Exception $e) {
             return $this->jsonResponse([
                 'status'  => 'error',
                 'message' => 'Failed to fetch contacts',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Retrieve list of clients linked to a given contact
+    public function clients(): string | bool
+    {
+        header('Content-Type: application/json');
+
+        try {
+
+            // Validate and retrieve contact ID
+            if (! isset($_GET['contact_id'])) {
+                return $this->jsonResponse([
+                    'status'  => 'fail',
+                    'message' => 'Invalid contact_id',
+                ], 400);
+            }
+
+            $contactId = (int)$_GET['contact_id'];
+
+            // Get contact clients
+            $clients = $this->contact->getContactClients($contactId);
+
+            if ($clients) {
+                return $this->jsonResponse([
+                    'status' => 'success',
+                    'data'   => $clients,
+                ], 200);
+            }
+
+            if (!$clients) {
+                return $this->jsonResponse([
+                    'status' => 'success',
+                    'data'   => [],
+                ], 200);
+            }
+
+            throw new Exception('Failed to fetch clients');
+
+        } catch (Exception $e) {
+            return $this->jsonResponse([
+                'status'  => 'error',
+                'message' => 'Failed to fetch clients',
                 'error'   => $e->getMessage(),
             ], 500);
         }
@@ -154,34 +158,34 @@ class ClientController extends Controller
         try {
 
             // Validate input
-            if (! isset($request['client_code']) || ! isset($request['contact_ids']) || ! is_array($request['contact_ids'])) {
+            if (! isset($request['contact_id']) || ! isset($request['client_codes']) || ! is_array($request['client_codes'])) {
                 return $this->jsonResponse([
                     'status'  => 'error',
                     'message' => 'Invalid inputs',
                 ], 400);
             }
 
-            $clientCode = (string)$request['client_code'];
-            $contactIds = array_map('intval', $request['contact_ids']); // Ensure all IDs are integers
+            $contactId = (int)$request['contact_id'];
+            $clientCodes = array_map('strval', $request['client_codes']); // Ensure all IDs are integers
 
-            // Link each contact to the client
-            foreach ($contactIds as $contactId) {
-                $this->contact->link($clientCode, $contactId);
+            // Link each client to the contact
+            foreach ($clientCodes as $clientCode) {
+                $this->client->link($clientCode, $contactId);
             }
-
-            if ($clientCode) {
+            
+            if ($contactId) {
                 return $this->jsonResponse([
                     'status'  => 'success',
-                    'message' => 'Client linked to contacts successfully.',
+                    'message' => 'Contact linked to client(s) successfully.',
                 ], 201);
             }
 
-            throw new Exception("Failed to link contacts");
+            throw new Exception("Failed to link clients");
 
         } catch (Exception $e) {
             return $this->jsonResponse([
                 'status'  => 'error',
-                'message' => 'Failed to link contacts',
+                'message' => 'Failed to link clients',
                 'error'   => $e->getMessage(),
             ], 500);
         }

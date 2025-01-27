@@ -20,3 +20,19 @@ body {
   .tabs .indicator {
     background-color: black !important;
   }
+
+  .home__container {
+    margin-top: 1.5rem;
+  }
+
+  .contacts_container {
+    margin-top: 1.5rem;
+  }
+
+  .clients__table {
+    margin-top: 1.5rem;
+  }
+
+  .contacts__table {
+    margin-top: 1.5rem;
+  }

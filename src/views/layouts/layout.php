@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="./src/views/style.css">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="./src/views/js/client-operations.js"></script>
+    <script src="./src/views/js/contact-operations.js"></script>
+    <script src="./src/views/js/globals.js"></script>
 </head>
 
 <body>
@@ -19,19 +23,19 @@
                 <a href="/" class="brand-logo">
                     BCity Challenge
                 </a>
-                <a href="#" data-target="mobilenav" class="sidenav-trigger right"><i class="material-icons">menu</i></a>
-                <ul class="right hide-on-med-and-down">
+                <!-- <a href="#" data-target="mobilenav" class="sidenav-trigger right"><i class="material-icons">menu</i></a> -->
+                <ul class="right">
                     <li><a href="/">Home</a></li>
                     <li><a href="/clients">Clients</a></li>
                     <li><a href="/contacts">Contacts</a></li>
                 </ul>
             </div>
         </nav>
-        <ul id="mobilenav" class="sidenav">
+        <!-- <ul id="mobilenav" class="sidenav">
             <li><a href="/">Home</a></li>
             <li><a href="/client">Clients</a></li>
             <li><a href="/contact">Contacts</a></li>
-        </ul>
+        </ul> -->
     </header>
     <main>
         {{content}}
@@ -49,16 +53,20 @@
 
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="./js/cards.js"></script>
-    <script src="./js/global.js"></script>
-
 
     <!-- Materialize JS Initialization here -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        const clientAPI = new ClientAPI();
+        const globals = new Globals();
+        const contactAPI = new ContactAPI();
+
+        document.addEventListener('DOMContentLoaded', async function() {
             var sidenav = document.querySelectorAll('.sidenav');
             var slider = document.querySelectorAll('.slider');
             var tab = document.querySelectorAll('.tabs');
+            var linkClientModal = document.querySelectorAll('.modal');
+            var select = document.querySelectorAll('select');
+            var clientCode = document.getElementById('client_code');
 
             M.Slider.init(slider, {
                 duration: 600,
@@ -66,6 +74,8 @@
             });
             M.Sidenav.init(sidenav, {});
             M.Tabs.init(tab, {});
+            M.Modal.init(linkClientModal, {});
+            M.FormSelect.init(select, {});
         });
     </script>
 </body>
