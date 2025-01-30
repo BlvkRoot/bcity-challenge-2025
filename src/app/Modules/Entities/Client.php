@@ -75,7 +75,6 @@ class Client
 
     private function extractClientCodePrefix(string $name): string
     {
-        $paddingChars = range('A', 'Z');
         // Remove extra spaces and trim
         $cleanName = trim(preg_replace('/\s+/', ' ', $name));
 
@@ -98,13 +97,22 @@ class Client
         // If prefix is less than 3 characters, pad with rotating A-Z characters
         if (strlen($prefix) < 3) {
             while (strlen($prefix) < 3) {
-                $prefix .= $paddingChars[self::$paddingIndex];
-                self::$paddingIndex = (self::$paddingIndex + 1) % count($paddingChars);
+                $prefix .= $this->getRandomLetter();
             }
         }
 
         // Ensure we only return exactly 3 characters
         return substr($prefix, 0, 3);
+    }
+
+    /**
+     * chr() converts an ASCII code to a character.
+     * mt_rand(65, 90) generates a random number between 65 (A) and 90 (Z), 
+     * which correspond to uppercase letters in the ASCII table.
+     * mt_rand() is faster than rand() and better suited for performance
+     **/
+    private function getRandomLetter(): string {
+        return chr(mt_rand(65, 90));
     }
 
     public function list(): array|bool
