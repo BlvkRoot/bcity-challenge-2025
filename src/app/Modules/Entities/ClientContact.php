@@ -53,13 +53,12 @@ class ClientContact
 
     public function unlink(string $clientCode, int $contactId)
     {
-        
-        $sql  = `DELETE FROM {$this->table} 
-                    WHERE {$this->table}.client_code = :contact_id
-                    AND {$this->table}.contact_id = :contact_id`;
+        $sql  = "DELETE FROM {$this->table} 
+                    WHERE {$this->table}.client_code = :client_code
+                    AND {$this->table}.contact_id = :contact_id";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':contact_id', $contactId, PDO::PARAM_INT);
-        $stmt->bindParam(':client_code', $clientCode, PDO::PARAM_STR);
+        $stmt->bindParam(':contact_id', $contactId);
+        $stmt->bindParam(':client_code', $clientCode);
 
         return $stmt->execute();
     }

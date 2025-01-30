@@ -124,12 +124,9 @@ class ContactAPI {
 
     // Load and display clients
     async loadClientsLinkedToContact($contactId) {
-        const clientListContainer = document.getElementById('contact_clients');
-        const contactId = localStorage.getItem('$contactId');
+        const clientListContainer = document.querySelector('#contact_clients_table tbody');
 
         try {
-            clientListContainer.innerHTML = '';
-
             const result = await this.getAllClientsByContactId($contactId);
             const clients = result?.data;
 
@@ -138,34 +135,31 @@ class ContactAPI {
                 return;
             }
 
-            // loadingSpinner.classList.remove('hidden');
-
             clientListContainer.innerHTML = `
-                <table class="table-auto">
-                    <thead>
-                        <tr>
-                            <th><p class="text-left">Name</p></th>
-                            <th><p class="text-left">Client Code</p></th>
-                            <th><p class="text-center"></p></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    ${clients.map(client => `
-                                    <tr>
-                                        <td><p class="text-left">${client.name}</p></td>
-                                        <td><p class="text-left">${client.client_code}</p></td>
-                                        <td>
-                                            <a 
-                                                href="#" 
-                                                id="unlink_client" 
-                                                data-contact-id="${$contactId}" 
-                                                data-client-code="${client.client_code}"
-                                                class="text-center">Unlink client</a>
-                                        </td>
-                                    </tr>`)}
+                <thead>
+                    <tr>
+                        <th><p class="text-left">Name</p></th>
+                        <th><p class="text-left">Client Code</p></th>
+                        <th><p class="text-center"></p></th>
+                    </tr>
+                </thead>`;
 
-                    </tbody>
-                </table>`;
+                clients.forEach(client => {
+                    const row = document.createElement('tr');
+                    row.id = `client-${client.client_code}`;
+                    row.innerHTML = `
+                        <td><p class="text-left">${client.name}</p></td>
+                        <td><p class="text-left">${client.client_code}</p></td>
+                        <td>
+                            <a 
+                                    href="#" 
+                                    id="unlink_client" 
+                                    data-contact-id="${$contactId}" 
+                                    data-client-code="${client.client_code}"
+                                    class="text-center">Unlink client</a>
+                        </td>`;
+                    clientListContainer.appendChild(row);
+                });
 
         } catch (error) {
             clientListContainer.innerHTML = `
@@ -173,8 +167,6 @@ class ContactAPI {
                     Error loading clients: ${error.message}
                 </div>
             `;
-        } finally {
-            // loadingSpinner.classList.add('hidden');
         }
     }
     

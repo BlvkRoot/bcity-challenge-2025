@@ -69,8 +69,6 @@ class ClientAPI {
             // Send AJAX request to fetch contacts
             const response = await fetch('/contacts/list');
             const result = await response.json();
-    
-            console.log(result);
 
             if (response.ok) {
                 // Clear the current options
@@ -125,14 +123,12 @@ class ClientAPI {
 
     // Load and display contacts
     async loadContactsLinkedToClient($clientCode) {
-        const contactListContainer = document.getElementById('client_contacts');
+        const contactListContainer = document.querySelector('#client_contacts_table tbody');
         try {
-            contactListContainer.innerHTML = '';
+            // contactListContainer.innerHTML = '';
 
             const result = await this.getAllContactsByClientCode($clientCode);
             const contacts = result?.data;
-
-            console.log(contacts);
 
             if (contacts?.length < 1) {
                 contactListContainer.innerHTML = '<p class="text-gray-500">No contact(s) found.</p>';
@@ -140,31 +136,30 @@ class ClientAPI {
             }
 
             contactListContainer.innerHTML = `
-                <table class="table-auto">
                     <thead>
                         <tr>
                             <th><p class="text-left">Contact FullName</p></th>
                             <th><p class="text-left">Contact Email address</p></th>
                             <th><p class="text-center"></p></th>
                         </tr>
-                    </thead>
-                    <tbody>
-                    ${contacts.map(contact => `
-                                    <tr>
-                                        <td><p class="text-left">${contact.surname} ${contact.name}</p></td>
-                                        <td><p class="text-left">${contact.email}</p></td>
-                                        <td>
-                                            <a 
-                                                href="#" 
-                                                id="unlink_contact" 
-                                                data-contact-id="${contact.id}" 
-                                                data-client-code="${$clientCode}"
-                                                class="text-center">Unlink contact</a>
-                                        </td>
-                                    </tr>`)}
-
-                    </tbody>
-                </table>`;
+                    </thead>`;
+                    
+            contacts.forEach(contact => {
+                const row = document.createElement('tr');
+                row.id = `contact-${contact.id}`;
+                row.innerHTML = `
+                    <td><p class="text-left">${contact.surname} ${contact.name}</p></td>
+                    <td><p class="text-left">${contact.email}</p></td>
+                    <td>
+                        <a 
+                            href="#" 
+                            id="unlink_contact" 
+                            data-contact-id="${contact.id}" 
+                            data-client-code="${$clientCode}"
+                            class="text-center">Unlink contact</a>
+                    </td>`;
+                contactListContainer.appendChild(row);
+            });
 
         } catch (error) {
             contactListContainer.innerHTML = `

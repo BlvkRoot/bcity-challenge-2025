@@ -8,7 +8,9 @@
                 </a>
             </div>
             <div class="contacts__table col s12 center">
-                <div id="contact_list"></div>
+                <table id="contact_list" class="table-auto">
+                    <tbody></tbody>
+                </table>
                 <div id="loading_spinner" class="hidden">Loading...</div>
             </div>
         </div>
@@ -79,7 +81,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="modal-footer col s6">
-                                        <a href="#!" class="waves-effect waves-green btn-flat orange" id="link_client">
+                                        <a href="#!" class="close-modal waves-effect waves-green btn-flat orange" id="link_client">
                                             Link
                                             <i class="material-icons right">send</i>
                                         </a>
@@ -92,13 +94,16 @@
 
             </div>
             <div id="contact_clients" class="col s12">
-                Clients
+                <table id="contact_clients_table" class="table-auto">
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>
 </section>
 
 <script src="./src/views/js/link-clients.js"></script>
+<script src="./src/views/js/unlink-client.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
@@ -107,12 +112,9 @@
 
     // Load and display contacts
     async function loadContacts() {
-            const contactListContainer = document.getElementById('contact_list');
-            // const loadingSpinner = document.getElementById('loading_spinner');
+            const contactListContainer = document.querySelector('#contact_list tbody');
 
             try {
-                contactListContainer.innerHTML = '';
-
                 const result = await contactAPI.getAllContacts();
                 const contacts = result?.data;
 
@@ -122,7 +124,6 @@
                 }
 
                 contactListContainer.innerHTML = `
-                    <table class="table-auto">
                         <thead>
                             <tr>
                                 <th><p class="text-left">Name</p></th>
@@ -130,18 +131,17 @@
                                 <th><p class="text-left">Email address</p></th>
                                 <th><p class="text-center">No. of Linked clients</p></th>
                             </tr>
-                        </thead>
-                        <tbody>
-                        ${contacts.map(contact => `
-                                        <tr>
-                                            <td><p class="text-left">${contact.name}</p></td>
-                                            <td><p class="text-left">${contact.surname}</p></td>
-                                            <td><p class="text-left">${contact.email}</p></td>
-                                            <td><p class="text-center">${contact.client_count}</p></td>
-                                        </tr>`)}
+                        </thead>`;
 
-                        </tbody>
-                    </table>`;
+                        contacts.forEach(contact => {
+                            const row =document.createElement('tr');
+                            row.innerHTML = `
+                                <td><p class="text-left">${contact.name}</p></td>
+                                <td><p class="text-left">${contact.surname}</p></td>
+                                <td><p class="text-left">${contact.email}</p></td>
+                                <td><p class="text-center">${contact.client_count}</p></td>`;
+                            contactListContainer.appendChild(row);
+                        });
 
             } catch (error) {
                 contactListContainer.innerHTML = `
@@ -149,8 +149,6 @@
                         Error loading contacts: ${error.message}
                     </div>
                 `;
-            } finally {
-                // loadingSpinner.classList.add('hidden');
             }
     }
 
@@ -185,43 +183,4 @@
             spinner.classList.add('hidden');
         }
     });
-</script>
-
-<script>
-    document.getElementById('unlink_client').addEventListener('click', async function (event) {
-    event.preventDefault(); // Prevent the default link behavior
-
-    // Get the IDs from the link's data attributes
-    const contactId = event.target.getAttribute('data-contact-id');
-    const clientCode = event.target.getAttribute('data-client-code');
-
-    if (!contactId || !clientId) {
-        alert('Contact ID and Client Code are required.');
-        return;
-    }
-
-    try {
-        // Send the POST request
-        const response = await fetch('/clients/unlink', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contact_id: contactId,
-                client_code: clientCode,
-            }),
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            globals.showNotification(result.message, 'success'); // Success message
-        } else {
-            globals.showNotification(`Error: ${result.error}`, 'error'); // Error message
-        }
-    } catch (error) {
-        console.log(`An error occurred: ${error.message}`);
-    }
-});
 </script>

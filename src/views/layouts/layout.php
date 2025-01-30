@@ -14,8 +14,6 @@
     <script src="./src/views/js/client-operations.js"></script>
     <script src="./src/views/js/contact-operations.js"></script>
     <script src="./src/views/js/globals.js"></script>
-    <script src="./src/views/js/unlink-client.js"></script>
-    <script src="./src/views/js/unlink-contact.js"></script>
 </head>
 
 <body>
@@ -66,7 +64,7 @@
             var sidenav = document.querySelectorAll('.sidenav');
             var slider = document.querySelectorAll('.slider');
             var tab = document.querySelectorAll('.tabs');
-            var linkClientModal = document.querySelectorAll('.modal');
+            var modals = document.querySelectorAll('.modal');
             var select = document.querySelectorAll('select');
             var clientCode = document.getElementById('client_code');
 
@@ -76,8 +74,17 @@
             });
             M.Sidenav.init(sidenav, {});
             M.Tabs.init(tab, {});
-            M.Modal.init(linkClientModal, {});
+            M.Modal.init(modals, {});
             M.FormSelect.init(select, {});
+
+            // Manually close modals to prevent closing all modals
+            document.querySelectorAll(".close-modal").forEach((button) => {
+                button.addEventListener("click", function () {
+                    const modal = this.closest(".modal"); // Get the closest modal
+                    const modalInstance = M.Modal.getInstance(modal);
+                    modalInstance.close();
+                });
+            });
         });
     </script>
 </body>

@@ -9,7 +9,9 @@
                 </a>
             </div>
             <div class="clients__table col s12 center">
-                <div id="client_list"></div>
+                <table id="client_list" class="table-auto">
+                    <tbody></tbody>
+                </table>
                 <div id="loading_spinner" class="hidden">Loading...</div>
             </div>
         </div>
@@ -20,12 +22,9 @@
     document.addEventListener('DOMContentLoaded', async function() {await loadClients();});
     // Load and display clients
     async function loadClients() {
-        const clientListContainer = document.getElementById('client_list');
-        // const loadingSpinner = document.getElementById('loading_spinner');
+        const clientListContainer = document.querySelector('#client_list tbody');
 
         try {
-            clientListContainer.innerHTML = '';
-
             const result = await clientAPI.getAllClients();
             const clients = result?.data;
 
@@ -34,27 +33,22 @@
                 return;
             }
 
-            // loadingSpinner.classList.remove('hidden');
-
             clientListContainer.innerHTML = `
-                <table class="table-auto">
                     <thead>
                         <tr>
                             <th><p class="text-left">Name</p></th>
                             <th><p class="text-left">Client Code</p></th>
                             <th><p class="text-center">No. of Linked Contacts</p></th>
                         </tr>
-                    </thead>
-                    <tbody>
-                    ${clients.map(client => `
-                                    <tr>
-                                        <td><p class="text-left">${client.name}</p></td>
-                                        <td><p class="text-left">${client.client_code}</p></td>
-                                        <td><p class="text-center">${client.contact_count}</p></td>
-                                    </tr>`)}
-
-                    </tbody>
-                </table>`;
+                    </thead>`;
+            clients.forEach(client =>{ 
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><p class="text-left">${client.name}</p></td>
+                    <td><p class="text-left">${client.client_code}</p></td>
+                    <td><p class="text-center">${client.contact_count}</p></td>`;
+                clientListContainer.appendChild(row);
+            });
 
         } catch (error) {
             clientListContainer.innerHTML = `
@@ -62,8 +56,6 @@
                     Error loading clients: ${error.message}
                 </div>
             `;
-        } finally {
-            // loadingSpinner.classList.add('hidden');
         }
     }
 </script>
